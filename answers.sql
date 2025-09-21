@@ -51,3 +51,21 @@ ORDER BY OrderID, Product;
 -- Display the 1NF result
 SELECT '1NF Transformation Result:' AS Result;
 SELECT * FROM ProductDetail_1NF ORDER BY OrderID, Product;
+
+-- Method 2: Alternative approach using a numbers table (for older MySQL versions)
+CREATE TABLE numbers (n INT);
+INSERT INTO numbers VALUES (1), (2), (3), (4), (5);
+
+CREATE TABLE ProductDetail_1NF_Alt AS
+SELECT 
+    p.OrderID,
+    p.CustomerName,
+    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(p.Products, ',', n.n), ',', -1)) AS Product
+FROM temp_product_detail p
+JOIN numbers n
+    ON CHAR_LENGTH(p.Products) - CHAR_LENGTH(REPLACE(p.Products, ',', '')) >= n.n - 1
+ORDER BY p.OrderID, n.n;
+
+-- Display alternative 1NF result
+SELECT 'Alternative 1NF Transformation Result:' AS Result;
+SELECT * FROM ProductDetail_1NF_Alt ORDER BY OrderID, Product;
