@@ -113,3 +113,25 @@ SELECT * FROM Orders_2NF ORDER BY OrderID;
 
 SELECT '2NF Transformation - OrderItems Table:' AS Result;
 SELECT * FROM OrderItems_2NF ORDER BY OrderID, Product;
+
+-- Documentation and Explanation
+/*
+Normalization Process Summary:
+
+1NF Transformation:
+- Split comma-separated Products column into individual rows
+- Each row now represents a single product for an order
+- Eliminated multi-valued attributes
+
+2NF Transformation:
+- Created separate Orders table to store CustomerName (depends only on OrderID)
+- Created OrderItems table to store Product and Quantity (depend on full composite key)
+- Added proper primary key and foreign key constraints
+- Eliminated partial dependencies
+
+Benefits:
+- Reduced data redundancy
+- Improved data integrity
+- Better query performance
+- Easier maintenance and updates
+*/
