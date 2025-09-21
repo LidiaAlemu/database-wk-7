@@ -69,3 +69,47 @@ ORDER BY p.OrderID, n.n;
 -- Display alternative 1NF result
 SELECT 'Alternative 1NF Transformation Result:' AS Result;
 SELECT * FROM ProductDetail_1NF_Alt ORDER BY OrderID, Product;
+
+-- Question 2: Achieving 2NF (Second Normal Form)
+-- Transform OrderDetails table to 2NF by removing partial dependencies
+
+-- First, create a temporary table with the sample data
+CREATE TEMPORARY TABLE temp_order_details AS
+SELECT OrderID, CustomerName, Product, Quantity
+FROM (
+    SELECT 101 AS OrderID, 'John Doe' AS CustomerName, 'Laptop' AS Product, 2 AS Quantity
+    UNION SELECT 101, 'John Doe', 'Mouse', 1
+    UNION SELECT 102, 'Jane Smith', 'Tablet', 3
+    UNION SELECT 102, 'Jane Smith', 'Keyboard', 1
+    UNION SELECT 102, 'Jane Smith', 'Mouse', 2
+    UNION SELECT 103, 'Emily Clark', 'Phone', 1
+) AS sample_data;
+
+-- Step 1: Create Orders table (removes partial dependency of CustomerName on OrderID)
+CREATE TABLE Orders_2NF AS
+SELECT DISTINCT 
+    OrderID,
+    CustomerName
+FROM temp_order_details
+ORDER BY OrderID;
+
+-- Step 2: Create OrderItems table (contains only attributes that depend on the full primary key)
+CREATE TABLE OrderItems_2NF AS
+SELECT 
+    OrderID,
+    Product,
+    Quantity
+FROM temp_order_details
+ORDER BY OrderID, Product;
+
+-- Add primary key and foreign key constraints
+ALTER TABLE Orders_2NF ADD PRIMARY KEY (OrderID);
+ALTER TABLE OrderItems_2NF ADD PRIMARY KEY (OrderID, Product);
+ALTER TABLE OrderItems_2NF ADD FOREIGN KEY (OrderID) REFERENCES Orders_2NF(OrderID);
+
+-- Display the 2NF results
+SELECT '2NF Transformation - Orders Table:' AS Result;
+SELECT * FROM Orders_2NF ORDER BY OrderID;
+
+SELECT '2NF Transformation - OrderItems Table:' AS Result;
+SELECT * FROM OrderItems_2NF ORDER BY OrderID, Product;
